@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using Full_GRASP_And_SOLID.Library;
+using System.Text;
 
 namespace Full_GRASP_And_SOLID
 {
@@ -16,7 +17,32 @@ namespace Full_GRASP_And_SOLID
         private static ArrayList productCatalog = new ArrayList();
 
         private static ArrayList equipmentCatalog = new ArrayList();
-
+        private static void AddProductToCatalog(string description, double unitCost)
+        {
+            productCatalog.Add(new Product(description, unitCost));
+        }
+        private static void AddEquipmentToCatalog(string description, double hourlyCost)
+        {
+            equipmentCatalog.Add(new Equipment(description, hourlyCost));
+        }
+        private static Product ProductAt(int index)
+        {
+            return productCatalog[index] as Product;
+        }
+        private static Equipment EquipmentAt(int index)
+        {
+            return equipmentCatalog[index] as Equipment;
+        }
+        private static Product GetProduct(string description)
+        {
+            var query = from Product product in productCatalog where product.Description == description select product;
+            return query.FirstOrDefault();
+        }
+        private static Equipment GetEquipment(string description)
+        {
+            var query = from Equipment equipment in equipmentCatalog where equipment.Description == description select equipment;
+            return query.FirstOrDefault();
+        } 
         public static void Main(string[] args)
         {
             PopulateCatalogs();
@@ -25,9 +51,8 @@ namespace Full_GRASP_And_SOLID
             recipe.FinalProduct = GetProduct("Café con leche");
             recipe.AddStep(new Step(GetProduct("Café"), 100, GetEquipment("Cafetera"), 120));
             recipe.AddStep(new Step(GetProduct("Leche"), 200, GetEquipment("Hervidor"), 60));
-            recipe.PrintRecipe();
+            ConsolePrinter.PrintRecipe(recipe);
         }
-
         private static void PopulateCatalogs()
         {
             AddProductToCatalog("Café", 100);
@@ -37,37 +62,10 @@ namespace Full_GRASP_And_SOLID
             AddEquipmentToCatalog("Cafetera", 1000);
             AddEquipmentToCatalog("Hervidor", 2000);
         }
-
-        private static void AddProductToCatalog(string description, double unitCost)
-        {
-            productCatalog.Add(new Product(description, unitCost));
-        }
-
-        private static void AddEquipmentToCatalog(string description, double hourlyCost)
-        {
-            equipmentCatalog.Add(new Equipment(description, hourlyCost));
-        }
-
-        private static Product ProductAt(int index)
-        {
-            return productCatalog[index] as Product;
-        }
-
-        private static Equipment EquipmentAt(int index)
-        {
-            return equipmentCatalog[index] as Equipment;
-        }
-
-        private static Product GetProduct(string description)
-        {
-            var query = from Product product in productCatalog where product.Description == description select product;
-            return query.FirstOrDefault();
-        }
-
-        private static Equipment GetEquipment(string description)
-        {
-            var query = from Equipment equipment in equipmentCatalog where equipment.Description == description select equipment;
-            return query.FirstOrDefault();
-        }
     }
 }
+/*
+    Según el principio SRP, cada clase debería tener una única responsabilidad.
+    Por lo tanto, creamos una nueva clase ConsolePrinter que se encargue de imprimir la receta.
+    De esta forma, la clase Recipe solo tiene la responsabilidad de conocer la receta, y no también de imprimirla.
+*/
